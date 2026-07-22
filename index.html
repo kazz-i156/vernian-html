@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VERNIAN - バーニアン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   html, body {
     margin: 0; padding: 0;
@@ -18,6 +20,7 @@
     justify-content: center;
   }
   #app {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 90vw;
@@ -132,13 +135,190 @@
     font-size: 28px;
     line-height: 1;
   }
+
+  /* ---- 8bit風タイトル/設定/ゲームオーバー画面 ---- */
+  .screen {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: #0a0d1a;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 4px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #cfe8ff;
+    font-family: 'Press Start 2P', monospace;
+    text-align: center;
+    padding: 6% 8%;
+    box-sizing: border-box;
+  }
+  .screen.visible { display: flex; }
+  .pixel-title {
+    font-size: clamp(26px, 9vw, 44px);
+    color: #ffe066;
+    text-shadow: 3px 3px 0 #d9503f, 6px 6px 0 rgba(0,0,0,0.5);
+    letter-spacing: 3px;
+    margin-bottom: 8%;
+    line-height: 1.3;
+  }
+  .pixel-heading {
+    font-size: clamp(14px, 4.5vw, 18px);
+    color: #8fd6ff;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+    margin-bottom: 6%;
+    letter-spacing: 2px;
+  }
+  .retro-btn {
+    font-family: 'Press Start 2P', monospace;
+    background: #1a2140;
+    border: 3px solid #8fd6ff;
+    color: #dff2ff;
+    padding: 12px 20px;
+    font-size: clamp(11px, 3.2vw, 14px);
+    margin: 8px;
+    box-shadow: 4px 4px 0 #04182e;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 2px;
+  }
+  .retro-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 #04182e;
+  }
+  .retro-btn.primary {
+    border-color: #ffe066;
+    color: #ffe066;
+  }
+  .settings-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 3% 0;
+    width: 100%;
+  }
+  .settings-label {
+    font-size: clamp(10px, 3vw, 13px);
+    color: #ffe066;
+    margin-bottom: 3%;
+    letter-spacing: 2px;
+  }
+  .option-row {
+    display: flex;
+    gap: 10px;
+  }
+  .option-btn {
+    font-family: 'Press Start 2P', monospace;
+    background: #14192e;
+    border: 2px solid #4d6099;
+    color: #9fb6d9;
+    padding: 8px 14px;
+    font-size: clamp(11px, 3vw, 14px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .option-btn.selected {
+    background: #ff8a4c;
+    border-color: #ffcaa0;
+    color: #1a0d05;
+  }
+  .speed-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    max-width: 320px;
+  }
+  #speedSlider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #263356;
+    border: 2px solid #4d6099;
+    outline: none;
+  }
+  #speedSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ffe066;
+    border: 2px solid #8f6b00;
+    cursor: pointer;
+  }
+  #speedSlider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #ffe066;
+    border: 2px solid #8f6b00;
+    cursor: pointer;
+  }
+  #speedValue {
+    font-size: clamp(11px, 3vw, 14px);
+    color: #8fd6ff;
+    min-width: 3.5em;
+  }
+  .version-text {
+    position: absolute;
+    bottom: 4%;
+    font-size: 9px;
+    color: #4d6099;
+    letter-spacing: 1px;
+  }
+  #gameOverScreen .pixel-title {
+    color: #ff5a5a;
+    text-shadow: 3px 3px 0 #7a1414, 6px 6px 0 rgba(0,0,0,0.5);
+  }
+  #gameOverScreen .pixel-heading {
+    color: #ffcaa0;
+  }
 </style>
 </head>
 <body>
 <div id="app">
+  <div id="titleScreen" class="screen visible">
+    <div class="pixel-title">VERNIAN</div>
+    <button class="retro-btn primary" id="btnGameStart">GAME START</button>
+    <button class="retro-btn" id="btnOpenSettings">SETTING</button>
+    <div class="version-text">v7</div>
+  </div>
+
+  <div id="settingsScreen" class="screen">
+    <div class="pixel-heading">SETTING</div>
+
+    <div class="settings-row">
+      <div class="settings-label">LIFE</div>
+      <div class="option-row" id="lifeOptions">
+        <div class="option-btn" data-value="3">3</div>
+        <div class="option-btn" data-value="5">5</div>
+        <div class="option-btn selected" data-value="infinite">&#8734;</div>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div class="settings-label">SPEED</div>
+      <div class="speed-slider-row">
+        <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+        <div id="speedValue">1.0x</div>
+      </div>
+    </div>
+
+    <button class="retro-btn" id="btnBackToTitle">TITLE</button>
+    <div class="version-text">v7</div>
+  </div>
+
+  <div id="gameOverScreen" class="screen">
+    <div class="pixel-title">GAME OVER</div>
+    <div class="pixel-heading">STAGE <span id="gameOverStage">1</span></div>
+    <button class="retro-btn primary" id="btnGameOverTitle">TITLE</button>
+  </div>
+
   <div id="playArea">
     <canvas id="gameCanvas"></canvas>
-    <div id="hud"><span class="title">VERNIAN</span><br>STAGE <span id="stageNum">1</span>　ダイヤ <span id="gemCount">0</span>/<span id="gemTotal">3</span><br>高度: <span id="altitude">0</span> m</div>
+    <div id="hud"><span class="title">VERNIAN</span><br>STAGE <span id="stageNum">1</span>　ダイヤ <span id="gemCount">0</span>/<span id="gemTotal">3</span>　LIFE <span id="lifeDisplay">&#8734;</span></div>
     <div id="clearOverlay">
       <div class="big">STAGE CLEAR!</div>
       <div class="small">次のステージへ…</div>
@@ -183,8 +363,62 @@
   const stageNumEl = document.getElementById('stageNum');
   const gemCountEl = document.getElementById('gemCount');
   const gemTotalEl = document.getElementById('gemTotal');
-  const altitudeEl = document.getElementById('altitude');
+  const lifeDisplayEl = document.getElementById('lifeDisplay');
   const clearOverlay = document.getElementById('clearOverlay');
+
+  const titleScreen = document.getElementById('titleScreen');
+  const settingsScreen = document.getElementById('settingsScreen');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const gameOverStageEl = document.getElementById('gameOverStage');
+  const speedSlider = document.getElementById('speedSlider');
+  const speedValueEl = document.getElementById('speedValue');
+  const lifeOptions = document.getElementById('lifeOptions');
+
+  // ---- アプリ全体の状態 ----
+  let appState = 'title'; // 'title' | 'settings' | 'playing' | 'gameover'
+  let lifeSetting = 'infinite'; // 3 | 5 | 'infinite'
+  let speedSetting = 1.0;       // 0.5 ~ 2.0
+  let livesRemaining = Infinity;
+
+  function showScreen(name) {
+    titleScreen.classList.toggle('visible', name === 'title');
+    settingsScreen.classList.toggle('visible', name === 'settings');
+    gameOverScreen.classList.toggle('visible', name === 'gameover');
+  }
+
+  function updateLifeHud() {
+    lifeDisplayEl.textContent = (lifeSetting === 'infinite') ? '\u221E' : livesRemaining;
+  }
+
+  document.getElementById('btnOpenSettings').addEventListener('click', () => {
+    appState = 'settings';
+    showScreen('settings');
+  });
+  document.getElementById('btnBackToTitle').addEventListener('click', () => {
+    appState = 'title';
+    showScreen('title');
+  });
+  document.getElementById('btnGameOverTitle').addEventListener('click', () => {
+    appState = 'title';
+    showScreen('title');
+  });
+  document.getElementById('btnGameStart').addEventListener('click', () => {
+    beginNewGame();
+  });
+
+  lifeOptions.querySelectorAll('.option-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      lifeOptions.querySelectorAll('.option-btn').forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const v = btn.dataset.value;
+      lifeSetting = (v === 'infinite') ? 'infinite' : parseInt(v, 10);
+    });
+  });
+
+  speedSlider.addEventListener('input', () => {
+    speedSetting = Math.round(parseFloat(speedSlider.value) * 10) / 10;
+    speedValueEl.textContent = speedSetting.toFixed(1) + 'x';
+  });
 
   // ---- ワールド設定 ----
   const TILE = 30;
@@ -209,8 +443,10 @@
   let enemies = [];
   let stageStartX = 0, stageStartY = 0;
 
-  const ENEMY_SPEED = 1.5;
-  const ENEMY_ROT_SPEED = 0.09;
+  const BASE_ENEMY_SPEED = 1.5;
+  const BASE_ENEMY_ROT_SPEED = 0.09;
+  let ENEMY_SPEED = BASE_ENEMY_SPEED;
+  let ENEMY_ROT_SPEED = BASE_ENEMY_ROT_SPEED;
 
 
   function generateMaze() {
@@ -366,13 +602,12 @@
     gemTotalEl.textContent = gemsTotal;
     gemCountEl.textContent = gemsCollected;
 
-    player.x = (COLS / 2) * TILE - 12;
+    player.x = (COLS / 2) * TILE - 10;
     player.y = TILE * 1.3;
     player.vx = 0;
     player.vy = 0;
     stageStartX = player.x;
     stageStartY = player.y;
-    maxAltitudeRow = ROWS;
 
     gameState = 'playing';
     clearOverlay.style.display = 'none';
@@ -381,18 +616,44 @@
 
   // ---- プレイヤー(自機:バーニアン) ----
   const player = {
-    x: 0, y: 0, w: 24, h: 30,
+    x: 0, y: 0, w: 20, h: 24,
     vx: 0, vy: 0,
     onGround: false,
     facing: 1,
     visualTilt: 0
   };
 
-  const GRAVITY = 0.45;
-  const MAX_FALL = 8;
-  const MOVE_SPEED = 2.6;
-  const THRUST_ACCEL = 0.75;
-  const MAX_UP_SPEED = 4.5;
+  const BASE_GRAVITY = 0.45;
+  const BASE_MAX_FALL = 8;
+  const BASE_MOVE_SPEED = 2.6;
+  const BASE_THRUST_ACCEL = 0.75;
+  const BASE_MAX_UP_SPEED = 4.5;
+  let GRAVITY = BASE_GRAVITY;
+  let MAX_FALL = BASE_MAX_FALL;
+  let MOVE_SPEED = BASE_MOVE_SPEED;
+  let THRUST_ACCEL = BASE_THRUST_ACCEL;
+  let MAX_UP_SPEED = BASE_MAX_UP_SPEED;
+
+  // SPEED設定(0.5〜2.0)をゲーム全体の速度に反映する
+  function applySpeed() {
+    const s = speedSetting;
+    GRAVITY = BASE_GRAVITY * s;
+    MAX_FALL = BASE_MAX_FALL * s;
+    MOVE_SPEED = BASE_MOVE_SPEED * s;
+    THRUST_ACCEL = BASE_THRUST_ACCEL * s;
+    MAX_UP_SPEED = BASE_MAX_UP_SPEED * s;
+    ENEMY_SPEED = BASE_ENEMY_SPEED * s;
+    ENEMY_ROT_SPEED = BASE_ENEMY_ROT_SPEED * s;
+  }
+
+  function beginNewGame() {
+    applySpeed();
+    livesRemaining = (lifeSetting === 'infinite') ? Infinity : lifeSetting;
+    updateLifeHud();
+    appState = 'playing';
+    showScreen('none');
+    startStage(1);
+  }
 
   // ---- 入力 ----
   const input = { left: false, right: false, thrust: false };
@@ -427,12 +688,12 @@
     player.x += dx;
     const left = player.x;
     const right = player.x + player.w;
-    const top = player.y + 2;
-    const bottom = player.y + player.h - 2;
+    const top = player.y;
+    const bottom = player.y + player.h;
     const c1 = Math.floor(left / TILE);
-    const c2 = Math.floor(right / TILE);
+    const c2 = Math.floor((right - 0.01) / TILE);
     const r1 = Math.floor(top / TILE);
-    const r2 = Math.floor(bottom / TILE);
+    const r2 = Math.floor((bottom - 0.01) / TILE);
     for (let r = r1; r <= r2; r++) {
       for (let c = c1; c <= c2; c++) {
         if (isBrick(c, r)) {
@@ -453,12 +714,12 @@
     player.onGround = false;
     const top = player.y;
     const bottom = player.y + player.h;
-    const left = player.x + 2;
-    const right = player.x + player.w - 2;
+    const left = player.x;
+    const right = player.x + player.w;
     const c1 = Math.floor(left / TILE);
-    const c2 = Math.floor(right / TILE);
+    const c2 = Math.floor((right - 0.01) / TILE);
     const r1 = Math.floor(top / TILE);
-    const r2 = Math.floor(bottom / TILE);
+    const r2 = Math.floor((bottom - 0.01) / TILE);
     for (let r = r1; r <= r2; r++) {
       for (let c = c1; c <= c2; c++) {
         if (isBrick(c, r)) {
@@ -476,14 +737,13 @@
 
   // ---- カメラ ----
   let cameraY = 0;
-  let maxAltitudeRow = ROWS;
 
   // ---- 敵(ラグビーボール)の移動 ----
   function rectHitsBrick(x, y, w, h) {
     const c1 = Math.floor(x / TILE);
-    const c2 = Math.floor((x + w) / TILE);
+    const c2 = Math.floor((x + w - 0.01) / TILE);
     const r1 = Math.floor(y / TILE);
-    const r2 = Math.floor((y + h) / TILE);
+    const r2 = Math.floor((y + h - 0.01) / TILE);
     for (let r = r1; r <= r2; r++) {
       for (let c = c1; c <= c2; c++) {
         if (isBrick(c, r)) return true;
@@ -542,6 +802,12 @@
     }
   }
 
+  function triggerGameOver() {
+    appState = 'gameover';
+    gameOverStageEl.textContent = stage;
+    showScreen('gameover');
+  }
+
   function checkEnemyCollision() {
     for (const enemy of enemies) {
       const ex1 = enemy.x + 2, ex2 = enemy.x + enemy.w - 2;
@@ -549,6 +815,14 @@
       const px1 = player.x, px2 = player.x + player.w;
       const py1 = player.y, py2 = player.y + player.h;
       if (px1 < ex2 && px2 > ex1 && py1 < ey2 && py2 > ey1) {
+        if (lifeSetting !== 'infinite') {
+          livesRemaining--;
+          updateLifeHud();
+          if (livesRemaining <= 0) {
+            triggerGameOver();
+            return;
+          }
+        }
         // 敵に接触 -> ステージ開始地点に戻される(取得済みダイヤは維持)
         player.x = stageStartX;
         player.y = stageStartY;
@@ -586,6 +860,7 @@
 
   // ---- 更新処理 ----
   function update() {
+    if (appState !== 'playing') return;
     if (gameState === 'clear') {
       stageClearTimer++;
       if (stageClearTimer > 100) {
@@ -618,11 +893,6 @@
     if (player.x + player.w > WORLD_W - TILE) player.x = WORLD_W - TILE - player.w;
     if (player.y < TILE) { player.y = TILE; player.vy = 0; }
     if (player.y + player.h > WORLD_H - TILE) { player.y = WORLD_H - TILE - player.h; player.vy = 0; player.onGround = true; }
-
-    const curRow = Math.floor(player.y / TILE);
-    if (curRow < maxAltitudeRow) maxAltitudeRow = curRow;
-    const altitude = Math.max(0, (ROWS - 2 - maxAltitudeRow));
-    altitudeEl.textContent = altitude;
 
     checkGems();
     updateEnemies();
@@ -905,6 +1175,7 @@
   }
 
   function draw(t) {
+    if (appState !== 'playing') return;
     ctx.clearRect(0, 0, WORLD_W, VIEW_H);
     ctx.fillStyle = '#1a2138';
     ctx.fillRect(0, 0, WORLD_W, VIEW_H);
@@ -944,7 +1215,7 @@
     requestAnimationFrame(loop);
   }
 
-  startStage(1);
+  showScreen('title');
   requestAnimationFrame(loop);
 })();
 </script>
